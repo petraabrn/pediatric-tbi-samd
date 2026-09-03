@@ -10,6 +10,7 @@ A MATLAB-based Software as a Medical Device (SaMD) designed for tertiary trauma 
 - **Value Proposition:** PhenoMap establishes an objective, biomarker-driven framework that classifies acute trauma heterogeneity into data-driven subphenotypes within the first 24 hours post-injury to inform early neuroprotective intervention.
 - **Target Classification:** Class II (Special Controls) via FDA De Novo Pathway (Human-in-the-Loop decision support).
 
+
 **2. ML PIPELINE**
 Raw Patient Inputs (51 pts)
 │  • Biomarkers (0h & 24h pooled): ASC, Caspase-1, IL-1β, Tau, GFAP, UCH-L1, NFL, p-Tau
@@ -37,14 +38,17 @@ Supervised Validation & Feature Attribution
    • Random Forest (TreeBagger) Multiclass OOB Error: 0.089 (91.1% Classification Accuracy)
    • Permutation feature importance (SHAP-equivalent) & One-vs-Rest distinct profile isolation
 
+
 **3. IDENTIFIED SUBPHENOTYPES**
 - **Phenotype 1 (Low Injury / High GCS):** Characterized by uniformly suppressed acute biomarkers (NFL, Tau, GFAP, UCH-L1 below population means) alongside well-preserved baseline GCS scores. Driven primarily by the absence of structural neurotrauma markers, this cohort consistently demonstrates favorable long-term functional recovery at 12 months.
 - **Phenotype 2 (Older / Larger Cohort):** Distinctly separated by patient habitus and development rather than primary injury severity, presenting with high age, weight, and body surface area (BSA). Biomarkers show intermediate, isolated elevations in GFAP and Tau with stable GCS, reflecting an age-dependent injury profile and intermediate recovery trajectories.
 - **Phenotype 3 (Severe Acute Neurotrauma):** Defined by young, low-weight patients exhibiting critical injury signatures: profoundly depressed GCS paired with marked acute spikes across structural and inflammatory markers (UCH-L1, NFL, GFAP). This group carries the highest risk profile and correlates with significantly poorer long-term GOS-E recovery outcomes, indicating an urgent need for early neuroprotective intervention.
 
+
 **4. VALIDATION**
 - Long-Term Prognostic Separation (6–12 Months): k=3 partitioning achieved statistically significant separation on 12-month GOS-E Peds scores (_p_ = 0.0286, Kruskal-Wallis).
 - Clinical Utility vs. Overfitting (k=3 vs. k=6): While k=6 demonstrated early short-term separation (2–6 weeks, _p_ = 0.0283), significance eroded over time due to small-cluster overfitting. Constraining the model to k=3 captured true, durable recovery trajectories, providing a quantitative basis for early critical-care escalations.
+
 
 **5. DESIGN CONTROLS**
 Clinical App Designer Interface: Built with a clinician-facing GUI incorporating:

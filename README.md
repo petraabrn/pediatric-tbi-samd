@@ -49,17 +49,15 @@ Unsupervised Clustering (PAM / k-Medoids)
 
 │  • Model Selection: Evaluated k=6 (mathematical optimum) vs. k=3 (clinically actionable)
 
-│  • Selection Rationale: k=6 suffered from micro-clusters prone to outcome hijacking; k=3 maintained 
-
-│    comparable cluster separation (Silhouette ≈ 0.38 vs. 0.193 Folweiler benchmark) while providing 
-
-│    sufficient statistical power per arm
+│  • Selection Rationale: k=6 suffered from micro-clusters prone to outcome hijacking; k=3 maintained comparable cluster separation (Silhouette ≈ 0.38 vs. 0.193 Folweiler benchmark) while providing sufficient statistical power per arm
 
 ▼
 
 Supervised Validation & Feature Attribution
-   • Random Forest (TreeBagger) Multiclass OOB Error: 0.089 (91.1% Classification Accuracy)
-   • Permutation feature importance (SHAP-equivalent) & One-vs-Rest distinct profile isolation
+
+│  • Random Forest (TreeBagger) Multiclass OOB Error: 0.089 (91.1% Classification Accuracy)
+
+│  • Permutation feature importance (SHAP-equivalent) & One-vs-Rest distinct profile isolation
 
 
 **3. IDENTIFIED SUBPHENOTYPES**

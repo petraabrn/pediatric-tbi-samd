@@ -14,29 +14,47 @@ A MATLAB-based Software as a Medical Device (SaMD) designed for tertiary trauma 
 **2. ML PIPELINE**
 
 Raw Patient Inputs (51 pts)
+
 │  • Biomarkers (0h & 24h pooled): ASC, Caspase-1, IL-1β, Tau, GFAP, UCH-L1, NFL, p-Tau
+
 │  • Clinical & Demographics: GCS, Age, Weight, Body Surface Area (BSA)
+
 ▼
 
 Preprocessing
+
 │  • Log-transform for skewed outlier distributions
+
 │  • One-hot & binary categorical encoding
+
 │  • KNN imputation for missing biomarker entries (<30% threshold)
+
 │  • Z-score standardization
+
 ▼
 
 Dimensionality Reduction (PCA)
+
 │  • Retained top 3 Principal Components explaining ~80% cumulative variance
+
 │  • PC1 (Injury Axis): Positive loading on UCH-L1, NFL, GFAP; inverse loading on GCS
+
 │  • PC2 / PC3 (Demographic Axes): Driven by Age, Weight, and BSA (orthogonal to injury severity)
+
 │  • Visual benchmarking: Evaluated alongside non-linear projections (UMAP, t-SNE)
+
 ▼
 
 Unsupervised Clustering (PAM / k-Medoids)
+
 │  • Model Selection: Evaluated k=6 (mathematical optimum) vs. k=3 (clinically actionable)
+
 │  • Selection Rationale: k=6 suffered from micro-clusters prone to outcome hijacking; k=3 maintained 
+
 │    comparable cluster separation (Silhouette ≈ 0.38 vs. 0.193 Folweiler benchmark) while providing 
+
 │    sufficient statistical power per arm
+
 ▼
 
 Supervised Validation & Feature Attribution

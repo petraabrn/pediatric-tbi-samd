@@ -1,82 +1,80 @@
-# pediatric-tbi-samd
+# PhenoMap: Pediatric TBI Subphenotyping SaMD
 
-**PhenoMap**
-_Pediatric TBI Subphenotyping SaMD_
+> **A MATLAB-based Software as a Medical Device (SaMD) leveraging acute 0–24h biomarker trajectories and unsupervised-to-supervised machine learning to stratify pediatric traumatic brain injury recovery phenotypes.**
 
-A MATLAB-based Software as a Medical Device (SaMD) designed for tertiary trauma centers, emergency departments, and PICUs. PhenoMap moves beyond subjective Glasgow Coma Scale (GCS) assessments by evaluating 0–24h acute inflammatory and CNS injury biomarker trajectories to discover latent, clinically actionable pediatric TBI recovery phenotypes.
+PhenoMap is an objective, biomarker-driven clinical decision support pipeline designed for tertiary trauma centers, emergency departments, and pediatric intensive care units (PICUs). Conventional triage relies heavily on subjective Glasgow Coma Scale (GCS) scoring and acute neuroimaging, which frequently fail to capture secondary neuroinflammation and injury evolution in pediatric and non-verbal populations. 
 
-**1. BACKGROUND**
-- **Unmet Needs:** Conventional clinical scores (GCS) and standard neuroimaging often fail to resolve active secondary neuroinflammation, particularly in non-verbal or pediatric populations.
-- **Value Proposition:** PhenoMap establishes an objective, biomarker-driven framework that classifies acute trauma heterogeneity into data-driven subphenotypes within the first 24 hours post-injury to inform early neuroprotective intervention.
-- **Target Classification:** Class II (Special Controls) via FDA De Novo Pathway (Human-in-the-Loop decision support).
+PhenoMap resolves acute patient heterogeneity within 24 hours of admission to stratify latent recovery trajectories and inform early neuroprotective intervention.
 
+* **Regulatory Classification:** Class II (Special Controls) via FDA De Novo Pathway (Human-in-the-Loop Clinical Decision Support).
+* **Compliance Standards:** Structured under IEC 62304 (Medical Device Software Lifecycle) and ISO 14971 (Application of Risk Management).
 
-**2. ML PIPELINE**
+---
 
-Raw Patient Inputs (51 pts)
+## 1. System & Machine Learning Pipeline
 
-│  • Biomarkers (0h & 24h pooled): ASC, Caspase-1, IL-1β, Tau, GFAP, UCH-L1, NFL, p-Tau
+```text
+       [ Raw Patient Inputs (n = 51 Cohort) ]
+       • Biomarkers (0h & 24h pooled): ASC, Caspase-1, IL-1β, Tau, GFAP, UCH-L1, NFL, p-Tau
+       • Clinical & Demographics: GCS, Age, Weight, Body Surface Area (BSA)
+                         │
+                         ▼
+        [ Preprocessing & Data Hygiene ]
+       • Log-transformation for right-skewed outlier distributions
+       • KNN imputation for sparse biomarker fields (<30% missingness threshold)
+       • One-hot / binary categorical encoding & Z-score standardization
+                         │
+                         ▼
+      [ Dimensionality Reduction & Projections ]
+       • Principal Component Analysis (Top 3 PCs explain ~80% cumulative variance)
+         - PC1 (Injury Axis): High positive loadings on UCH-L1, NFL, GFAP; inverse on GCS
+         - PC2 / PC3 (Demographic Axes): Orthogonal axes driven by Age, Weight, and BSA
+       • Benchmarked visually against non-linear manifolds (UMAP, t-SNE)
+                         │
+                         ▼
+     [ Unsupervised Phenotyping (PAM / k-Medoids) ]
+       • Partitioning Around Medoids evaluated across k = 2 through k = 8
+       • Silhouette optimization and cluster-stability cross-validation
+                         │
+                         ▼
+   [ Supervised Validation & Feature Attribution ]
+       • Random Forest (TreeBagger) Ensemble Validation
+       • Out-of-Bag (OOB) Multiclass Error: 0.089 (91.1% Classification Accuracy)
+       • Permutation feature importance (SHAP-equivalent) & One-vs-Rest profiling
+```
+## 2. Engineering Challenges & Pipeline Iterations
 
-│  • Clinical & Demographics: GCS, Age, Weight, Body Surface Area (BSA)
+* **Cluster Optimization vs. Clinical Power:** An initial mathematical model selected k=6 based purely on silhouette peaks. However, k=6 fragmented the cohort into unstable micro-clusters prone to outcome hijacking, with significance eroding by month 12. Constrained the architecture to k=3, maintaining high cluster separation (Silhouette ≈ 0.38 vs. the 0.193 Folweiler benchmark) while securing statistical power that revealed statistically significant 12-month GOS-E recovery divergence (p = 0.0286).
+* **Outlier Skew & Biomarker Sparsity:** Raw acute inflammatory markers displayed severe right-skewed distributions and irregular missingness across clinical labs. Implemented a combined log-transform and automated KNN imputation pipeline with a strict <30% missingness threshold, preventing distorted distance metrics during PCA projection without discarding high-acuity pediatric cases.
+* **Feature Leakage & Demographics Interference:** Preliminary models entangled patient developmental metrics with acute trauma signals. Decoupled feature loadings using PCA: PC1 isolated the true acute trauma axis (UCH-L1, NFL, GFAP inversely correlated with GCS), while PC2 and PC3 isolated developmental demographics (Age, Weight, BSA), ensuring predictions reflect physiological injury rather than physical growth.
+* **Clinical Interpretability & Verification:** Standard ensemble models presented as clinical "black boxes," hindering physician adoption. Built an integrated MATLAB App Designer interface with safety interlocks that block predictions if missing inputs exceed validated thresholds, while generating real-time Pareto explanation plots and cohort heatmaps for dynamic patient risk audits.
 
-▼
+---
 
-Preprocessing
+## 3. Discovered Clinical Subphenotypes
 
-│  • Log-transform for skewed outlier distributions
+* **Phenotype 1 — Low Injury / High GCS (Favorable Recovery):** Characterized by uniformly suppressed acute biomarkers (NFL, Tau, GFAP, and UCH-L1 below population medians) alongside preserved baseline GCS. Driven by the absence of active structural neurotrauma, this cohort consistently demonstrates favorable functional outcomes on the GOS-E Peds scale at 12 months.
+* **Phenotype 2 — Older / Larger Cohort (Intermediate Profile):** Separated predominantly along demographic axes (elevated age, weight, and BSA) rather than primary acute damage. Presents with intermediate, isolated elevations in GFAP and Tau with stable GCS scores, reflecting an age-dependent injury profile and intermediate recovery trajectories.
+* **Phenotype 3 — Severe Acute Neurotrauma (High-Risk Intervention):** Defined by young, lower-weight patients presenting with critical injury signatures: profoundly depressed GCS combined with massive acute spikes across structural and inflammatory markers (UCH-L1, NFL, GFAP). Correlates with significantly worse 12-month GOS-E scores, identifying the subpopulation requiring immediate neuroprotective therapy and PICU monitoring escalation.
 
-│  • One-hot & binary categorical encoding
+---
 
-│  • KNN imputation for missing biomarker entries (<30% threshold)
+## 4. Core Technical Skills Demonstrated
 
-│  • Z-score standardization
+* **Biomedical Data Science & ML:** Unsupervised clustering (PAM/k-Medoids), Random Forest ensembles (TreeBagger), PCA dimensionality reduction, permutation feature importance, KNN imputation, log-normal transformations.
+* **Clinical Biostatistics:** Non-parametric hypothesis testing (Kruskal-Wallis), longitudinal clinical outcome correlation (GOS-E Peds at 6 and 12 months), silhouette metric benchmarking.
+* **Software Architecture & SaMD Design Controls:** MATLAB App Designer GUI development, asynchronous error handling, input sanity checking, audit trail logging.
+* **Regulatory & Quality Systems:** IEC 62304 software safety classification, ISO 14971 hazard identification, clinical risk analysis, and software traceability matrix documentation.
 
-▼
+---
 
-Dimensionality Reduction (PCA)
+## 5. Repository Structure
 
-│  • Retained top 3 Principal Components explaining ~80% cumulative variance
-
-│  • PC1 (Injury Axis): Positive loading on UCH-L1, NFL, GFAP; inverse loading on GCS
-
-│  • PC2 / PC3 (Demographic Axes): Driven by Age, Weight, and BSA (orthogonal to injury severity)
-
-│  • Visual benchmarking: Evaluated alongside non-linear projections (UMAP, t-SNE)
-
-▼
-
-Unsupervised Clustering (PAM / k-Medoids)
-
-│  • Model Selection: Evaluated k=6 (mathematical optimum) vs. k=3 (clinically actionable)
-
-│  • Selection Rationale: k=6 suffered from micro-clusters prone to outcome hijacking; k=3 maintained comparable cluster separation (Silhouette ≈ 0.38 vs. 0.193 Folweiler benchmark) while providing sufficient statistical power per arm
-
-▼
-
-Supervised Validation & Feature Attribution
-
-│  • Random Forest (TreeBagger) Multiclass OOB Error: 0.089 (91.1% Classification Accuracy)
-
-│  • Permutation feature importance (SHAP-equivalent) & One-vs-Rest distinct profile isolation
-
-
-**3. IDENTIFIED SUBPHENOTYPES**
-- **Phenotype 1 (Low Injury / High GCS):** Characterized by uniformly suppressed acute biomarkers (NFL, Tau, GFAP, UCH-L1 below population means) alongside well-preserved baseline GCS scores. Driven primarily by the absence of structural neurotrauma markers, this cohort consistently demonstrates favorable long-term functional recovery at 12 months.
-- **Phenotype 2 (Older / Larger Cohort):** Distinctly separated by patient habitus and development rather than primary injury severity, presenting with high age, weight, and body surface area (BSA). Biomarkers show intermediate, isolated elevations in GFAP and Tau with stable GCS, reflecting an age-dependent injury profile and intermediate recovery trajectories.
-- **Phenotype 3 (Severe Acute Neurotrauma):** Defined by young, low-weight patients exhibiting critical injury signatures: profoundly depressed GCS paired with marked acute spikes across structural and inflammatory markers (UCH-L1, NFL, GFAP). This group carries the highest risk profile and correlates with significantly poorer long-term GOS-E recovery outcomes, indicating an urgent need for early neuroprotective intervention.
-
-
-**4. VALIDATION**
-- Long-Term Prognostic Separation (6–12 Months): k=3 partitioning achieved statistically significant separation on 12-month GOS-E Peds scores (_p_ = 0.0286, Kruskal-Wallis).
-- Clinical Utility vs. Overfitting (k=3 vs. k=6): While k=6 demonstrated early short-term separation (2–6 weeks, _p_ = 0.0283), significance eroded over time due to small-cluster overfitting. Constraining the model to k=3 captured true, durable recovery trajectories, providing a quantitative basis for early critical-care escalations.
-
-
-**5. DESIGN CONTROLS**
-Clinical App Designer Interface: Built with a clinician-facing GUI incorporating:
-- Dynamic Pareto explanation plots illustrating individual patient feature attribution.
-- Phenotype cohort heatmaps mapping the patient's acute vector against reference bounds.
--Safety interlock logic preventing prediction generation if missing biomarker fields exceed safe thresholds.
-
-Risk Management & Design Traceability: Structured under IEC 62304 (Medical device software lifecycle) and ISO 14971 risk management standards:
-- Traceability matrix mapping 10 identified clinical/technical software hazards to software safety mitigations.
-- Verification protocols designed for clinical decision support audit trails.
+```text
+├── src/
+│   ├── data/                # Raw & preprocessed clinical & biomarker inputs
+│   ├── code/                # MATLAB code (.m)
+│   └── gui/                 # MATLAB App Designer files (.mlapp) 
+├── docs/
+│   ├── regulatory/          # ISO 14971 Risk Analysis & IEC 62304 Hazard Traceability Matrix
+│   └── documentation/       # Other documentation

@@ -59,7 +59,7 @@ PhenoMap resolves acute patient heterogeneity within 24 hours of admission to st
 
 ---
 
-## 4. Core Technical Skills Demonstrated
+## 4. Core Skills 
 
 * **Biomedical Data Science & ML:** Unsupervised clustering (PAM/k-Medoids), Random Forest ensembles (TreeBagger), PCA dimensionality reduction, permutation feature importance, KNN imputation, log-normal transformations.
 * **Clinical Biostatistics:** Non-parametric hypothesis testing (Kruskal-Wallis), longitudinal clinical outcome correlation (GOS-E Peds at 6 and 12 months), silhouette metric benchmarking.
